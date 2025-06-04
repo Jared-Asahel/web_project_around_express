@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const urlRegex =
-  /^https?:\/\/(www\.)?[\w\-]+(\.[\w\-]+)+([\/\w\-._~:/?#[\]@!$&'()*+,;=]*)?#?$/;
+const urlRegex = /^https?:\/\/(www\.)?[\w-]+(\.[\w-]+)+([/\w-._~:/?#[\]@!$&'()*+,;=]*)?#?$/;
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -26,4 +25,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);

@@ -1,4 +1,4 @@
-const Card = require("../models/card");
+const Card = require('../models/card');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -13,26 +13,30 @@ const createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        err.statusCode = 400;
+      if (err.name === 'ValidationError') {
+        const error = new Error('Datos inválidos al crear la tarjeta');
+        error.statusCode = 400;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail(() => {
-      const err = new Error("Tarjeta no encontrada");
-      err.statusCode = 404;
-      throw err;
+      const error = new Error('Tarjeta no encontrada');
+      error.statusCode = 404;
+      throw error;
     })
-    .then((card) => res.send({ message: "Tarjeta eliminada", card }))
+    .then((card) => res.send({ message: 'Tarjeta eliminada', card }))
     .catch((err) => {
-      if (err.name === "CastError") {
-        err.statusCode = 404;
+      if (err.name === 'CastError') {
+        const error = new Error('ID de tarjeta inválido');
+        error.statusCode = 400;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -42,17 +46,21 @@ const likeCard = (req, res, next) => {
     {
       $addToSet: { likes: req.params.cardId },
     },
-    { new: true }
+    { new: true },
   )
     .orFail(() => {
-      const error = new Error("Tarjeta no encontrada");
+      const error = new Error('Tarjeta no encontrada');
       error.statusCode = 404;
       throw error;
     })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "CastError") err.statusCode = 400;
-      next(err);
+      if (err.name === 'CastError') {
+        const error = new Error('ID de tarjeta inválido');
+        error.statusCode = 400;
+        return next(error);
+      }
+      return next(err);
     });
 };
 
@@ -62,18 +70,28 @@ const dislikeCard = (req, res, next) => {
     {
       $pull: { likes: req.params.cardId },
     },
-    { new: true }
+    { new: true },
   )
     .orFail(() => {
-      const error = new Error("Tarjeta no encontrada");
+      const error = new Error('Tarjeta no encontrada');
       error.statusCode = 404;
       throw error;
     })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === "CastError") err.statusCode = 400;
-      next(err);
+      if (err.name === 'CastError') {
+        const error = new Error('ID de tarjeta inválido');
+        error.statusCode = 400;
+        return next(error);
+      }
+      return next(err);
     });
 };
 
-module.exports = { getCards, createCard, deleteCard, likeCard, dislikeCard };
+module.exports = {
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
+};
